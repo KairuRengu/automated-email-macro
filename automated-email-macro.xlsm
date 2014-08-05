@@ -1,0 +1,39 @@
+Sub CreateMail()
+
+    Dim objOutlook As Object
+    Dim objMail As Object
+    Dim rngTo As Range
+    Dim Subject As String
+    Dim rngBody As Range
+    Dim EmailBody As String
+    Dim EmailFooter As String
+    EmailBody = "Enter Email Description"
+    
+    Set objOutlook = CreateObject("Outlook.Application")
+    Set objMail = objOutlook.CreateItem(0)
+        With objMail
+            .Display
+        End With
+            EmailFooter = objMail.body
+    
+    
+    With ActiveSheet
+        Set rngTo = .Range("L2")
+        Subject = "Whatever"
+        Set rngBody = .Range("B4")
+    End With
+    
+    With objMail
+        .To = rngTo.Value
+        .Subject = Subject
+        .body = EmailBody & EmailFooter
+        .Send
+    End With
+
+    Set objOutlook = Nothing
+    Set objMail = Nothing
+    Set rngTo = Nothing
+    Subject = ""
+    Set rngBody = Nothing
+
+End Sub
