@@ -7,22 +7,36 @@ Sub CreateMail()
     Dim rngBody As Range
     Dim EmailBody As String
     Dim EmailFooter As String
-    EmailBody = "Enter Email Description"
+    Dim SearchTitleArray As New Collection
+    Dim SearchObject As Object
+    Dim SearchTitle As String
+
+    Do While SearchTitle <> "0" Or SearchTitle <> ""
+        SearchTitle = InputBox("Please enter the titles of the properties you wish to use (e.g. City), or type in 0 to stop:", "Getting Titles")
+        If SearchTitle <> "0" Then
+            SearchTitleArray.Add (SearchTitle)
+        End If
+    Loop
+
+    For Each aString In SearchTitleArray
+        MsgBox (aString)
+    Next aString
     
+    EmailBody = ""
     Set objOutlook = CreateObject("Outlook.Application")
     Set objMail = objOutlook.CreateItem(0)
         With objMail
             .Display
         End With
             EmailFooter = objMail.body
-    
-    
+
+
     With ActiveSheet
         Set rngTo = .Range("L2")
         Subject = "Whatever"
         Set rngBody = .Range("B4")
     End With
-    
+
     With objMail
         .To = rngTo.Value
         .Subject = Subject
