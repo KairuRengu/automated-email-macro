@@ -132,5 +132,21 @@ Function FindTitle(ByVal UserTitle As String) As Integer
         End If
 End Function
 
+Function EnterSearchEntries() As Variant
+    Dim UserSearchValue(0 To 30) As Variant
+    Dim X As Integer
+    X = 0
+    UserSearchValue(X) = InputBox("Please enter one entry for:", "Get Search Values")
+    MsgBox (UserSearchValue(X))
+        Do While (UserSearchValue(X) <> "")
+            X = X + 1
+            UserSearchValue(X) = InputBox("Please enter one entry for:", "Get Search Values")
+            MsgBox (UserSearchValue(X))
+            If UserSearchValue(X) = "" Then
+                UserDefinedStop = True
+            End If
+        Loop
+        EnterSearchEntries = UserSearchValue
+End Function
 
 
