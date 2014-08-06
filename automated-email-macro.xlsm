@@ -1,53 +1,85 @@
 Sub CreateMail()
 
-    Dim objOutlook As Object
-    Dim objMail As Object
+    Dim ObjOutlook As Object
+    Dim ObjMail As Object
+    
     Dim rngTo As Range
     Dim Subject As String
     Dim rngBody As Range
+    
     Dim EmailBody As String
     Dim EmailFooter As String
+    
     Dim SearchTitleArray As New Collection
     Dim SearchObject As Object
     Dim SearchTitle As String
-
-    Do While SearchTitle <> "0" Or SearchTitle <> ""
+    Dim SearchValue(30) As String
+    
+    'Dim TitleIndex As Integer
+    
+    SearchTitle = "Default"
+    Do While SearchTitle <> "0" And SearchTitle <> ""
         SearchTitle = InputBox("Please enter the titles of the properties you wish to use (e.g. City), or type in 0 to stop:", "Getting Titles")
-        If SearchTitle <> "0" Then
+        If SearchTitle <> "0" And SearchTitle <> "" Then
+            SearchTitle = StrConv(SearchTitle, vbProperCase)
             SearchTitleArray.Add (SearchTitle)
         End If
     Loop
-
+    
     For Each aString In SearchTitleArray
         MsgBox (aString)
     Next aString
-    
-    EmailBody = ""
-    Set objOutlook = CreateObject("Outlook.Application")
-    Set objMail = objOutlook.CreateItem(0)
-        With objMail
-            .Display
-        End With
-            EmailFooter = objMail.body
+        
+    EmailBody = GetEmailText()
 
-
+    EmailFooter = GetEmailFooter(ObjOutlook, ObjMail)
+    Set ObjOutlook = CreateObject("Outlook.Application")
+    Set ObjMail = ObjOutlook.CreateItem(0)
     With ActiveSheet
         Set rngTo = .Range("L2")
         Subject = "Whatever"
         Set rngBody = .Range("B4")
     End With
 
-    With objMail
+    With ObjMail
         .To = rngTo.Value
         .Subject = Subject
         .body = EmailBody & EmailFooter
         .Send
     End With
 
-    Set objOutlook = Nothing
-    Set objMail = Nothing
+    Set ObjOutlook = Nothing
+    Set ObjMail = Nothing
     Set rngTo = Nothing
     Subject = ""
     Set rngBody = Nothing
 
 End Sub
+
+Function GetEmailText() As String
+    EmailMessageForm.Show
+    GetEmailText = EmailMessageForm.EmailBodyTextBox
+    Unload EmailMessageForm
+End Function
+
+Function GetEmailFooter(ByVal ObjOutlook As Object, ByVal ObjMail As Object) As String
+
+    Set ObjOutlook = CreateObject("Outlook.Application")
+    Set ObjMail = ObjOutlook.CreateItem(0)
+        With ObjMail
+            .Display
+        End With
+            GetEmailFooter = ObjMail.body
+End Function
+
+'Function FindTitle(ByVal UserTitle As String) As Integer
+'    Dim UserFind As Boolean
+'    FoundTitle = 1
+'    UserFind = False
+'    Do While ActiveSheet.Cells(1, FindTitle).Value <> "" Or FoundTitle = True
+'        If UserTitle = ActiveSheet.Cells(1, FindTitle).Value Then
+'            FoundTitle = True
+'        FindTitle = FindTitle + 1
+'End Function
+
+
