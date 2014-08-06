@@ -2,19 +2,16 @@ Sub CreateMail()
 
     Dim ObjOutlook As Object
     Dim ObjMail As Object
-    
-    Dim rngTo As Range
     Dim Subject As String
-    Dim rngBody As Range
-    
+    Dim SendEmailTo As String
     Dim EmailBody As String
     Dim EmailFooter As String
     
     Dim SearchTitleArray As New Collection
-    Dim SearchObject As Object
     Dim SearchTitle As String
     Dim SearchValue(30) As String
-    
+    Dim X As Integer
+    X = 0
     'Dim TitleIndex As Integer
     
     SearchTitle = "Default"
@@ -25,36 +22,49 @@ Sub CreateMail()
             SearchTitleArray.Add (SearchTitle)
         End If
     Loop
+
+    'Used for Debugging Purposes
     
     For Each aString In SearchTitleArray
         MsgBox (aString)
     Next aString
+    
+    SearchValue(X) = InputBox("Please enter one entry for:", "Get Search Values")
+    MsgBox (SearchValue(X))
+        Do While (SearchValue(X) <> "" Or SearchValue(X) <> "")
+            X = X + 1
+            SearchValue(X) = InputBox("Please enter one entry for:", "Get Search Values")
+            MsgBox (SearchValue(X))
+            If SearchValue(X) = "" Then
+                UserDefinedStop = True
+            End If
+        Loop
         
+        
+    EmailSubject = GetSubjectText()
     EmailBody = GetEmailText()
-
     EmailFooter = GetEmailFooter(ObjOutlook, ObjMail)
+    
     Set ObjOutlook = CreateObject("Outlook.Application")
     Set ObjMail = ObjOutlook.CreateItem(0)
-    With ActiveSheet
-        Set rngTo = .Range("L2")
-        Subject = "Whatever"
-        Set rngBody = .Range("B4")
-    End With
+    
+    EmailMessageTo = ActiveSheet.Cells(2, 12).Value
+
 
     With ObjMail
-        .To = rngTo.Value
-        .Subject = Subject
+        .To = EmailMessageTo
+        .Subject = EmailSubject
         .body = EmailBody & EmailFooter
         .Send
     End With
 
     Set ObjOutlook = Nothing
     Set ObjMail = Nothing
-    Set rngTo = Nothing
+    EmailMessageTo = ""
     Subject = ""
-    Set rngBody = Nothing
 
 End Sub
+
 
 Function GetEmailText() As String
     EmailMessageForm.Show
@@ -62,8 +72,13 @@ Function GetEmailText() As String
     Unload EmailMessageForm
 End Function
 
-Function GetEmailFooter(ByVal ObjOutlook As Object, ByVal ObjMail As Object) As String
+Function GetSubjectText() As String
+    SubjectMessageForm.Show
+    GetSubjectText = SubjectMessageForm.SubjectTextBox
+    Unload SubjectMessageForm
+End Function
 
+Function GetEmailFooter(ByVal ObjOutlook As Object, ByVal ObjMail As Object) As String
     Set ObjOutlook = CreateObject("Outlook.Application")
     Set ObjMail = ObjOutlook.CreateItem(0)
         With ObjMail
@@ -71,6 +86,9 @@ Function GetEmailFooter(ByVal ObjOutlook As Object, ByVal ObjMail As Object) As 
         End With
             GetEmailFooter = ObjMail.body
 End Function
+
+
+
 
 'Function FindTitle(ByVal UserTitle As String) As Integer
 '    Dim UserFind As Boolean
