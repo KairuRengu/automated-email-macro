@@ -1,5 +1,6 @@
 Sub CreateMail()
-
+    
+    'Declaration of Mail Variables
     Dim ObjOutlook As Object
     Dim ObjMail As Object
     Dim Subject As String
@@ -7,16 +8,18 @@ Sub CreateMail()
     Dim EmailBody As String
     Dim EmailFooter As String
     
+    'Declaration of Seach Variables
     Dim SearchTitleArray As New Collection
     Dim SearchTitle As String
     Dim SearchValue(30) As String
     Dim SearchItem  As String
     Dim X As Integer
     Dim Y As Integer
+    
+    'Intialize counters
     Y = 1
     X = 0
-    'Dim TitleIndex As Integer
-    
+      
     SearchTitle = "Default"
     Do While SearchTitle <> "0" And SearchTitle <> ""
         SearchTitle = InputBox("Please enter the titles of the properties you wish to use (e.g. City), or type in 0 to stop:", "Getting Titles")
@@ -25,12 +28,6 @@ Sub CreateMail()
             SearchTitleArray.Add (SearchTitle)
         End If
     Loop
-
-    'Used for Debugging Purposes
-    
-    For Each aString In SearchTitleArray
-        MsgBox (aString)
-    Next aString
     
     SearchValue(X) = InputBox("Please enter one entry for:", "Get Search Values")
     MsgBox (SearchValue(X))
@@ -42,20 +39,28 @@ Sub CreateMail()
                 UserDefinedStop = True
             End If
         Loop
+        
     SearchItem = SearchTitleArray.Item(1)
     MsgBox (SearchItem)
     SearchIndex = FindTitle(SearchItem)
+    
     If SearchIndex = -1 Then
         MsgBox "There is no such Title as " & SearchItem, , "Error", Err.HelpFile, Err.HelpContext
     Else
         MsgBox (SearchIndex)
         For X = 0 To 30
-            Do While ActiveSheet.Cells(Y, SearchIndex).Value <> ""
-                Y = Y + 1
-                If ActiveSheet.Cells(Y, SearchIndex).Value = SearchValue(X) Then
-                    MsgBox ("I FOUND IT")
-                End If
-            Loop
+            If SearchValue(X) = "" Then
+                X = 30
+            Else
+                MsgBox ("Next Value" & SearchValue(X))
+                Do While ActiveSheet.Cells(Y, SearchIndex).Value <> ""
+                    Y = Y + 1
+                    If ActiveSheet.Cells(Y, SearchIndex).Value = SearchValue(X) Then
+                        MsgBox ("I FOUND IT" & Y)
+                    End If
+                Loop
+                Y = 1
+            End If
         Next X
         
     End If
@@ -108,30 +113,23 @@ Function GetEmailFooter(ByVal ObjOutlook As Object, ByVal ObjMail As Object) As 
             GetEmailFooter = ObjMail.body
 End Function
 
-
-
-
 Function FindTitle(ByVal UserTitle As String) As Integer
     Dim FoundTitle As Boolean
     Dim TitleIndex As Integer
     TitleIndex = 1
     FindTitle = 1
     FoundTitle = False
-    
     Do While ActiveSheet.Cells(1, TitleIndex).Value <> "" And FoundTitle = False
         TitleIndex = TitleIndex + 1
         If UserTitle = ActiveSheet.Cells(1, TitleIndex).Value Then
             FoundTitle = True
         End If
-        
-        
     Loop
         If ActiveSheet.Cells(1, TitleIndex).Value = "" Then
             FindTitle = -1
         Else
             FindTitle = TitleIndex
         End If
-        
 End Function
 
 
