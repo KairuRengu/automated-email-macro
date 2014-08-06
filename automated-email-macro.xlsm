@@ -10,7 +10,10 @@ Sub CreateMail()
     Dim SearchTitleArray As New Collection
     Dim SearchTitle As String
     Dim SearchValue(30) As String
+    Dim SearchItem  As String
     Dim X As Integer
+    Dim Y As Integer
+    Y = 1
     X = 0
     'Dim TitleIndex As Integer
     
@@ -39,20 +42,38 @@ Sub CreateMail()
                 UserDefinedStop = True
             End If
         Loop
+    SearchItem = SearchTitleArray.Item(1)
+    MsgBox (SearchItem)
+    SearchIndex = FindTitle(SearchItem)
+    If SearchIndex = -1 Then
+        MsgBox "There is no such Title as " & SearchItem, , "Error", Err.HelpFile, Err.HelpContext
+    Else
+        MsgBox (SearchIndex)
+        For X = 0 To 30
+            Do While ActiveSheet.Cells(Y, SearchIndex).Value <> ""
+                Y = Y + 1
+                If ActiveSheet.Cells(Y, SearchIndex).Value = SearchValue(X) Then
+                    MsgBox ("I FOUND IT")
+                End If
+            Loop
+        Next X
+        
+    End If
+    
         
         
     EmailSubject = GetSubjectText()
     EmailBody = GetEmailText()
     EmailFooter = GetEmailFooter(ObjOutlook, ObjMail)
-    
+
     Set ObjOutlook = CreateObject("Outlook.Application")
     Set ObjMail = ObjOutlook.CreateItem(0)
-    
+
     EmailMessageTo = ActiveSheet.Cells(2, 12).Value
 
 
     With ObjMail
-        .To = EmailMessageTo
+        .to = EmailMessageTo
         .Subject = EmailSubject
         .body = EmailBody & EmailFooter
         .Send
@@ -90,14 +111,28 @@ End Function
 
 
 
-'Function FindTitle(ByVal UserTitle As String) As Integer
-'    Dim UserFind As Boolean
-'    FoundTitle = 1
-'    UserFind = False
-'    Do While ActiveSheet.Cells(1, FindTitle).Value <> "" Or FoundTitle = True
-'        If UserTitle = ActiveSheet.Cells(1, FindTitle).Value Then
-'            FoundTitle = True
-'        FindTitle = FindTitle + 1
-'End Function
+Function FindTitle(ByVal UserTitle As String) As Integer
+    Dim FoundTitle As Boolean
+    Dim TitleIndex As Integer
+    TitleIndex = 1
+    FindTitle = 1
+    FoundTitle = False
+    
+    Do While ActiveSheet.Cells(1, TitleIndex).Value <> "" And FoundTitle = False
+        TitleIndex = TitleIndex + 1
+        If UserTitle = ActiveSheet.Cells(1, TitleIndex).Value Then
+            FoundTitle = True
+        End If
+        
+        
+    Loop
+        If ActiveSheet.Cells(1, TitleIndex).Value = "" Then
+            FindTitle = -1
+        Else
+            FindTitle = TitleIndex
+        End If
+        
+End Function
+
 
 
