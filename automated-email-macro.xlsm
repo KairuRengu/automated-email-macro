@@ -149,4 +149,18 @@ Function EnterSearchEntries() As Variant
         EnterSearchEntries = UserSearchValue
 End Function
 
-
+Function GetSearchArray() As Variant
+    Dim SearchArray(1 To 20)
+    Dim SearchTitle As String
+    Dim X As Integer
+    X = 1
+    SearchTitle = "Default"
+    Do While SearchTitle <> "0" And SearchTitle <> "" And X < 21
+        SearchTitle = InputBox("Please enter the titles of the properties you wish to use (e.g. City), or type in 0 to stop:", "Getting Titles")
+        If SearchTitle <> "0" And SearchTitle <> "" Then
+            SearchArray(X) = StrConv(SearchTitle, vbProperCase)
+            X = X + 1
+        End If
+    Loop
+    GetSearchArray = SearchArray
+End Function
