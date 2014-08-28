@@ -23,7 +23,7 @@ Sub CreateMail()
     Dim SearchArray As Variant
     Dim EmailList As New Collection
     Dim ContactList As New Collection
-    
+    Dim Greeting As String
     'Declaration of Counters
     Dim X As Integer
     Dim Y As Integer
@@ -34,16 +34,10 @@ Sub CreateMail()
     EmailIndex = FindTitle("E-mail")
     ContactIndex = FindTitle("Contact")
     ContactTypeIndex = FindTitle("Contact Type")
-    MsgBox (ContactTypeIndex)
-    MsgBox (ContactIndex)
-    MsgBox (EmailIndex)
     SearchTitleArray = GetSearchArray()
-    
     SearchArray = EnterSearchEntries()
     SearchItem = SearchTitleArray(1)
-    MsgBox (SearchItem)
     SearchIndex = FindTitle(SearchItem)
-    MsgBox (SearchIndex)
     
     If SearchIndex = -1 Then
         MsgBox "There is no such Title as " & SearchItem, , "Error", Err.HelpFile, Err.HelpContext
@@ -52,7 +46,6 @@ Sub CreateMail()
             If SearchArray(X) = "" Then
                 X = 30
             Else
-                MsgBox ("Next Value" & SearchArray(X))
                 Do While ActiveSheet.Cells(Y, 1).Value <> ""
                     Y = Y + 1
                     If ActiveSheet.Cells(Y, SearchIndex).Value = SearchArray(X) Then
@@ -71,10 +64,11 @@ Sub CreateMail()
             Set ObjOutlook = CreateObject("Outlook.Application")
             Set ObjMail = ObjOutlook.CreateItem(0)
             EmailMessageTo = EmailList.Item(X)
+            Greeting = CreateGreeting(X)
             With ObjMail
-                .to = EmailMessageTo
+                .To = EmailMessageTo
                 .Subject = EmailSubject
-                .body = EmailBody & EmailFooter
+                .body = Greeting & EmailBody & EmailFooter
                 .Send
             End With
         Next X
@@ -91,7 +85,16 @@ Sub CreateMail()
     Subject = ""
 
 End Sub
-
+Function CreateGreeting(ByVal X As Integer)
+    Dim TitleIndex As Integer
+    TitleIndex = FindTitle("Contact")
+    If ActiveSheet.Cells(X, TitleIndex).Value <> "" Then
+        CreateGreeting = "Dear " & ActiveSheet.Cells(X, TitleIndex).Value & "," & vbCrLf & vbCrLf
+    Else
+        CreateGreeting = "To Whom it may concern," & vbCrLf & vbCrLf
+    End If
+    
+End Function
 
 Function GetEmailText() As String
     EmailMessageForm.Show
@@ -138,11 +141,9 @@ Function EnterSearchEntries() As Variant
     Dim X As Integer
     X = 0
     UserSearchValue(X) = InputBox("Please enter one entry for:", "Get Search Values")
-    MsgBox (UserSearchValue(X))
         Do While (UserSearchValue(X) <> "")
             X = X + 1
             UserSearchValue(X) = InputBox("Please enter one entry for:", "Get Search Values")
-            MsgBox (UserSearchValue(X))
             If UserSearchValue(X) = "" Then
                 UserDefinedStop = True
             End If
